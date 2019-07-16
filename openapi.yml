@@ -61,11 +61,10 @@ components:
     Unauthorized:
       description: >
         Request is missing authorization.
-        The error message will contain a link to the authorization path
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/LinkError'
+            $ref: '#/components/schemas/Error'
     Conflict:
       description: >
         Resource already exists.
@@ -85,9 +84,7 @@ components:
         title:
           type: string
         externalId:
-          description: >
-            The ID of this item on an external platform, like IMDb or TMDb.
-            This attribute is required for adding an item
+          description: The ID of this item on an external platform, like IMDb or TMDb.
           type: string
           required: true
         status:
