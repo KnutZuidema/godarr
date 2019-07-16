@@ -12,6 +12,11 @@ paths:
         Request information about an item, which may be any kind of observable
         object, like a movie or TV series.
       operationId: getItem
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: uuid
       responses:
         200:
           description: Item with specified ID was found
@@ -28,6 +33,7 @@ paths:
       summary: list items via paging
       description: >
         Lists items via paging. Paging can be controlled via query parameters
+      operationId: listItems
       parameters:
         - name: offset
           in: query
