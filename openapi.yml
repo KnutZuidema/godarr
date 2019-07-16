@@ -1,0 +1,165 @@
+openapi: "3.0.1"
+info:
+  title: Godarr
+  version: "0.1"
+paths:
+  /item/{id}:
+    get:
+      summary: Request information about an item
+      description: >
+        Request information about an item, which may be any kind of observable
+        object, like a movie or TV series.
+      operationId: getItem
+      responses:
+        200:
+          description: Item with specified ID was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+  /item:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      summary: Add an item
+      description: >
+        Add an item to the catalog of known items, making further actions
+        available, like searching or monitoring the item.
+      operationId: addItem
+      responses:
+        204:
+          description: Item was added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        409:
+          $ref: '#/components/responses/Conflict'
+components:
+  responses:
+    NotFound:
+      description: Resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: >
+        Request is missing authorization.
+        The error message will contain a link to the authorization path
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LinkError'
+    Conflict:
+      description: >
+        Resource already exists.
+        The error message will contain a link to the already existing resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LinkError'
+  schemas:
+    Item:
+      description: An observable item like a movie or TV series
+      properties:
+        kind:
+          $ref: '#/components/schemas/ItemKind'
+        id:
+          type: uuid
+        title:
+          type: string
+        externalId:
+          description: >
+            The ID of this item on an external platform, like IMDb or TMDb.
+            This attribute is required for adding an item
+          type: string
+          required: true
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+        description:
+          type: string
+        imagePath:
+          type: string
+        releaseYear:
+          type: integer
+        genres:
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/Movie'
+            - $ref: '#/components/schemas/TVSeries'
+    ItemKind:
+      enum:
+        - movie
+        - tv-series
+    ItemStatus:
+      enum:
+        - added
+        - monitored
+        - downloaded
+    Movie:
+      description: A movie item
+      properties:
+        collectionID:
+          type: string
+    TVSeries:
+      description: A TV series item
+      properties:
+        seasonCount:
+          type: integer
+        seasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/TVSeriesSeason'
+    TVSeriesSeason:
+      description: A season of a TV series
+      properties:
+        description:
+          type: string
+        number:
+          type: integer
+        releaseYear:
+          type: integer
+        episodeCount:
+          type: integer
+        episodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TVSeriesEpisode'
+    TVSeriesEpisode:
+      description: An episode of a TV series
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        seasonNumber:
+          type: integer
+        number:
+          type: integer
+    Error:
+      description: An error message containing more detailed information about the occured error
+      properties:
+        message:
+          type: string
+    LinkError:
+      description: An error message with a link to a helpful resource
+      properties:
+        message:
+          type: string
+        url:
+          type: string
