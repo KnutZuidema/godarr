@@ -2,6 +2,8 @@ openapi: "3.0.1"
 info:
   title: Godarr
   version: "0.1"
+security:
+  - apiKey: []
 paths:
   /item/{id}:
     get:
@@ -163,3 +165,9 @@ components:
           type: string
         url:
           type: string
+  securitySchemes:
+    apiKey:
+      description: API provided by the server
+      type: apiKey
+      name: X-API-Key
+      in: header
