@@ -24,6 +24,33 @@ paths:
         404:
           $ref: '#/components/responses/NotFound'
   /item:
+    get:
+      summary: list items via paging
+      description: >
+        Lists items via paging. Paging can be controlled via query parameters
+      parameters:
+        - name: offset
+          in: query
+          schema:
+            description: value to offset the list of returned items by
+            type: integer
+            default: 0
+        - name: count
+          in: query
+          schema:
+            description: maximum amount of items to return
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        200:
+          description: successfully returned items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemPaging'
+        401:
+          $ref: '#/components/responses/Unauthorized'
     post:
       requestBody:
         content:
@@ -86,7 +113,6 @@ components:
         externalId:
           description: The ID of this item on an external platform, like IMDb or TMDb.
           type: string
-          required: true
         status:
           $ref: '#/components/schemas/ItemStatus'
         description:
@@ -153,6 +179,19 @@ components:
         seasonNumber:
           type: integer
         number:
+          type: integer
+    ItemPaging:
+      description: list of pageable items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        offset:
+          type: integer
+        count:
+          type: integer
+        total:
           type: integer
     Error:
       description: An error message containing more detailed information about the occured error
