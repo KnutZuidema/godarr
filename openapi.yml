@@ -29,7 +29,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Item'
+              properties:
+                externalId:
+                  description: The ID of this item on an external platform, like IMDb or TMDb.
+                  type: string
+                  required: true
       summary: Add an item
       description: >
         Add an item to the catalog of known items, making further actions
