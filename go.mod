@@ -8,7 +8,11 @@ require (
 	github.com/KnutZuidema/go-tmdb v0.0.0-20190901195805-e36dd5c7966e
 	github.com/anacrolix/torrent v1.9.0
 	github.com/gorilla/mux v1.7.3
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/kylelemons/go-gypsy v0.0.0-20160905020020-08cad365cd28 // indirect
+	github.com/lib/pq v1.0.0
+	github.com/rubenv/sql-migrate v0.0.0-20191025130928-9355dd04f4b3
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
+	gopkg.in/gorp.v1 v1.7.2 // indirect
 )
