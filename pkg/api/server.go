@@ -37,7 +37,7 @@ var (
 )
 
 type Server struct {
-	router     *mux.Router
+	Router     *mux.Router
 	db         db.Database
 	logger     log.FieldLogger
 	addedItems chan<- model.Item
@@ -46,10 +46,10 @@ type Server struct {
 func New(db db.Database, addedItems chan<- model.Item) *Server {
 	s := &Server{
 		db:         db,
-		logger:     log.StandardLogger(),
+		logger:     log.StandardLogger().WithField("component", "api server"),
 		addedItems: addedItems,
 	}
-	s.router = s.setupRouter()
+	s.Router = s.setupRouter()
 	return s
 }
 
