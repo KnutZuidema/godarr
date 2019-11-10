@@ -10,7 +10,7 @@ import (
 	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/KnutZuidema/godarr/pkg/db"
+	"github.com/KnutZuidema/godarr/pkg/database"
 	"github.com/KnutZuidema/godarr/pkg/model"
 )
 
@@ -38,16 +38,21 @@ var (
 
 type Server struct {
 	Router     *mux.Router
-	db         db.Database
+	db         database.Database
 	logger     log.FieldLogger
 	addedItems chan<- model.Item
+	AddTimeout time.Duration
 }
 
-func New(db db.Database, addedItems chan<- model.Item) *Server {
+func NewServer(db database.Database, addedItems chan<- model.Item, logger log.FieldLogger) *Server {
+	if logger == nil {
+		logger = log.StandardLogger()
+	}
 	s := &Server{
 		db:         db,
-		logger:     log.StandardLogger().WithField("component", "api server"),
+		logger:     logger.WithField("component", "api server"),
 		addedItems: addedItems,
+		AddTimeout: 10 * time.Second,
 	}
 	s.Router = s.setupRouter()
 	return s
@@ -70,6 +75,7 @@ func (s Server) setupRouter() *mux.Router {
 	})
 	router.HandleFunc("/item/{id}", s.errorHandler(s.getItem)).Methods(http.MethodGet)
 	router.HandleFunc("/item", s.errorHandler(s.addItem)).Methods(http.MethodPost)
+	router.HandleFunc("/item", s.errorHandler(s.listItems)).Methods(http.MethodGet)
 	return router
 }
 
@@ -144,7 +150,7 @@ func (s Server) addItem(w http.ResponseWriter, r *http.Request) *Error {
 			StatusCode: http.StatusInternalServerError,
 		}
 	}
-	timer := time.NewTimer(10 * time.Second)
+	timer := time.NewTimer(s.AddTimeout)
 	select {
 	case s.addedItems <- item:
 		w.WriteHeader(http.StatusCreated)
